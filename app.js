@@ -26,7 +26,19 @@ const dbURL = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
 
 const path = require('path');
 
+//'mongodb://localhost:27017/yelp-camp'
+mongoose.connect(dbURL, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false
+});
 
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', () => {
+    console.log('Database connected');
+});
 
 app.use(express.urlencoded({extended: true}));
 app.use(methodOverride('_method'));
@@ -70,19 +82,9 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 
-//'mongodb://localhost:27017/yelp-camp'
-mongoose.connect(dbURL, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false
-});
 
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', () => {
-    console.log('Database connected');
-});
+
+
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -116,6 +118,7 @@ app.use((err, req, res, next) => {
     
 })
 
-app.listen(3000, () => {
-    console.log('PORT 3000')
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+    console.log(`Serving on port ${port}`)
 })
