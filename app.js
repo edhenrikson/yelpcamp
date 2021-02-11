@@ -21,7 +21,7 @@ const reviewsRoutes = require('./routes/reviews');
 const userRoutes = require('./routes/users');
 const MongoDBStore = require('connect-mongo')(session);
 
-const dbURL = 'mongodb://localhost:27017/yelp-camp';
+const dbURL = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
 
 
 const path = require('path');
@@ -35,9 +35,11 @@ app.engine('ejs', ejsMate);
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+const secret = process.env.SECRET || 'thisisasecret'
+
 const store = new MongoDBStore({
     url: dbURL,
-    secret: 'thisisasecret',
+    secret,
     touchAfter: 24 * 60 * 60
 });
 
@@ -47,7 +49,7 @@ store.on('error', function(e) {
 
 const sessionConfig = {
     store,
-    secret:'secret',
+    secret,
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -114,7 +116,6 @@ app.use((err, req, res, next) => {
     
 })
 
-const port = process.env.PORT || 3000
-app.listen(port, () => {
-    console.log(`PORT ${port}`)
+app.listen(3000, () => {
+    console.log('PORT 3000')
 })
